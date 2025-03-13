@@ -1,47 +1,43 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import './style.css';
+
+//https://sujeitoprogramador.com/rn-api/?api=posts
 
 function App() {
-  const [input, setInput] = useState("");
-  const [tarefas, setTarefas] = useState(() =>{
-      const tarefasStorage = localStorage.getItem('@tarefa');
-      return tarefasStorage ? JSON.parse(tarefasStorage) : []
-    });
+  const [nutri, setNutri] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem('@tarefa', JSON.stringify(tarefas))
-  }, [tarefas]);
 
-  function handleRegister(e) {
-    e.preventDefault();
+    function loadApi() {
 
-    setTarefas([...tarefas, input]);
-    setInput("");
-  }
+      let url = "https://sujeitoprogramador.com/rn-api/?api=posts";
+      fetch(url)
+        .then((response) => response.json())
+        .then((json)=>{setNutri(json)})
+    }
+
+    loadApi();
+  }, []);
 
   return (
-    <div>
-      <h1>Cadastrando usuário</h1>
+    <div className="container">
+      <header>
+        <strong>React Nutri</strong>
+      </header>
 
-      <form onSubmit={handleRegister}>
-        <label>Nome da tarefa:</label>
-        <br />
-        <input
-          placeholder="Digite uma tarefa"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-        />
-        <br />
+      {nutri.map((item) =>{
+        return(
+          <article key={item.id} className="post" >
+            <strong className="titulo">{item.titulo}</strong>
+            <img src={item.capa} alt={item.titulo} className="capa" />
 
-        <button type="submit">Registrar</button>
-      </form>
-      <br />
-      <br />
-
-      <ul>
-        {tarefas.map((tarefa) => (
-          <li key={tarefa}>{tarefa}</li>
-        ))}
-      </ul>
+            <p className="subtitulo">
+              {item.subtitulo}
+            </p>
+            <a className="botao">Acessar</a>
+          </article>
+        )
+      })}
     </div>
   );
 }
